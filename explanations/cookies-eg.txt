@@ -1,0 +1,23 @@
+examples of creating a cookie
+
+app.get("/set-cookies", (req, res) => {
+    //res.setHeader("Set-Cookie", "newUser = true"); --> normal way, without middleware
+    // that right here does the same thing like the snippet above
+    // first argument is the name, second sets the value and the third is for options-object like:
+    // timer: maxAge (default is session)
+    // secure: only fires when the https is used
+    // httpOnly: only accessible on backend, not able to do anything on it from the frontend
+    res.cookie("newUser", "false"); // = 1 DAY
+    res.cookie("isWorking", "true", {
+        maxAge: 1000 * 60 * 60 * 24,
+        httpOnly: true,
+    }); // = 1 DAY
+
+    res.send("you got the cookies");
+});
+
+app.get("/read-cookies", (req, res) => {
+    const cookies = req.cookies;
+    console.log(cookies.newUser);
+    res.json(cookies);
+});

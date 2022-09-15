@@ -1,0 +1,64 @@
+<%- include ("partials/header") %>
+
+<form>
+    <h2>Sign up</h2>
+    <label for="userName">Username</label>
+    <input type="text" name="userName" placeholder="Whatever" required />
+    <div class="userName error"></div>
+    <label for="email">Email</label>
+    <input type="text" name="email" placeholder="test@example.com" required />
+    <div class="email error"></div>
+    <label for="password">Password</label>
+    <input type="password" name="password" placeholder="whoopwhoop" required />
+    <div class="password error"></div>
+    <button>Sign up</button>
+</form>
+
+<%- include ("partials/footer") %>
+
+<script>
+    const form = document.querySelector("form");
+    const emailError = document.querySelector(".email");
+    const userNameError = document.querySelector(".userName");
+    const passwordError = document.querySelector(".password");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        //reset the error-divs on submit
+        emailError.textContent = "";
+        passwordError.textContent = "";
+        userNameError.textContent = "";
+
+        //get the values
+        const email = form.email.value;
+        const password = form.password.value;
+        const userName = form.userName.value; // must be named the same like in the module
+
+        console.log(email, password, userName);
+
+        try {
+            const res = await fetch("/signup", {
+                method: "POST",
+                body: JSON.stringify({ userName, email, password }),
+                headers: { "Content-Type": "application/json" },
+            });
+            const data = await res.json();
+            console.log(data);
+
+            //if there are errors, show them in the divs
+            if (data.errors) {
+                emailError.textContent = data.errors.email;
+                passwordError.textContent = data.errors.password;
+                userNameError.textContent = data.errors.userName;
+            }
+
+            //if there is a userID redirect them to home
+            if (data.user) {
+                location.assign("/"); // a redirect from the frontend
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    });
+</script>
